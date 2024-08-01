@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #282c34;
+            color: white;
+        }
+
+        .stopwatch {
+            text-align: center;
+            position: relative;
+        }
+
+        .time {
+            font-size: 120px;
+            margin-bottom: 20px;
+        }
+
+        .buttons button {
+            font-size: 20px;
+            margin: 0 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .buttons #start{
+            background-color: greenyellow;
+        }
+
+        .buttons #start:hover{
+            background-color: green;
+        }
+
+        .buttons #stop{
+            background-color: red;
+        }
+
+        .buttons #stop:hover{
+            background-color: darkred;
+        }
+
+        .buttons #lap{
+            background-color:blanchedalmond;
+        }
+
+        .buttons #lap:hover{
+            background-color: lightgoldenrodyellow;
+        }
+
+        .buttons #reset{
+            background-color:blueviolet;
+        }
+
+        .buttons #reset:hover{
+            background-color: indigo;
+        }
+
+
+        .laps {
+            margin-top: 20px;
+        }
+
+        .laps div {
+            font-size: 24px;
+        }
+
+        .status {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left:666px;
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stopwatch">
+        <div class="time" id="time">00:00:00.000</div>
+        <div class="status" id="status"></div>
+        <div class="buttons">
+            <button id="start" onclick="start()">🏃🏻‍♂️‍➡️ Start</button>
+            <button id="stop" onclick="stop()">🚫 Stop</button>
+            <button id="lap" onclick="lap()">⏲️ Lap</button>
+            <button onclick="reset()" id="reset">♻️ Reset</button>
+        </div>
+        <div class="laps" id="laps"></div>
+    </div>
+    <script>
+        let startTime;
+        let updatedTime;
+        let difference;
+        let timerInterval;
+        let running = false;
+        let laps = [];
+
+        function start() {
+            if (!running) {
+                startTime = new Date().getTime() - (difference || 0);
+                timerInterval = setInterval(updateTime, 1);
+                running = true;
+                document.getElementById("status").style.backgroundColor = "green";
+                document.getElementById("status").style.scale="1.2";
+                time.style.color="greenyellow";
+            }
+        }
+
+        function stop() {
+            if (running) {
+                clearInterval(timerInterval);
+                running = false;
+                document.getElementById("status").style.backgroundColor = "red";
+                document.getElementById("status").style.scale="1";
+                time.style.color="lightcoral";
+            }
+        }
+
+        function updateTime() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+
+            let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            let milliseconds = Math.floor((difference % 1000));
+
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            milliseconds = (milliseconds < 100) ? (milliseconds < 10 ? "00" + milliseconds : "0" + milliseconds) : milliseconds;
+            document.getElementById("time").textContent = hours + ":" + minutes + ":" + seconds + "." + milliseconds;
+        }
+
+        function reset() {
+            clearInterval(timerInterval);
+            running = false;
+            difference = 0;
+            document.getElementById("time").textContent = "00:00:00.000";
+            document.getElementById("laps").innerHTML = "";
+            document.getElementById("status").style.backgroundColor = "red";
+            document.getElementById("status").style.scale="1";
+            laps = [];
+            time.style.color="white";
+        }
+
+        function lap() {
+            if (running) {
+                laps.push(document.getElementById("time").textContent);
+                let lapsHtml = "";
+                laps.forEach((lapTime, index) => {
+                    lapsHtml += '<div>Lap ' + (index + 1) + ': ' + lapTime + '</div>';
+                });
+                document.getElementById("laps").innerHTML = lapsHtml;
+            }
+        }
+    </script>
+</body>
+
+</html>
